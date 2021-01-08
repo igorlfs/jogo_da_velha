@@ -1,13 +1,7 @@
-#ifndef BOARD_R
-#define BOARD_R 3
-#endif
-#ifndef BOARD_C
-#define BOARD_C 3
-#endif
 #ifndef BOARD
 #define BOARD
 struct board {
-    char table[BOARD_R][BOARD_C];
+    char table[3][3];
     board();
     void printBoard();
     bool checkValid(const char turn);
