@@ -12,21 +12,17 @@ void readInput(char &input) {
 int main() {
     char playerOne = '\0';
     char playerTwo = '\0';
-    cout << "Choose your character (x or o): ";
+    cout << "Choose your character (X or O): ";
     readInput(playerOne);
-    for (; playerOne != 'x' && playerOne != 'o';) {
-        cout << "Dude, just choose between 'x' and 'o': ";
+    for (; playerOne != 'X' && playerOne != 'O';) {
+        cout << "Dude, just choose between 'X' and 'O': ";
         readInput(playerOne);
     }
 
-    if (playerOne == 'x')
-        playerTwo = 'o';
+    if (playerOne == 'X')
+        playerTwo = 'O';
     else
-        playerTwo = 'x';
-    cout << endl
-         << "Player 1 is " << playerOne << endl
-         << "Player 2 is " << playerTwo << endl
-         << endl;
+        playerTwo = 'X';
 
     board field;
     field.printBoard();
