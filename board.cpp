@@ -1,58 +1,80 @@
 #include "board.hpp"
 
 #include <iostream>
-using namespace std;
-board::board() {
-    char k = '1';
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            table[i][j] = k;
-            k++;
+using std::cout;
+using std::endl;
+
+const int VALID = 0;
+const int INVALID = 1;
+const int WIN = 1;
+const int NOTWIN = 0;
+
+void board::initializeArena() {
+    // Initialize numbers from 1 to 9
+    char fillArena = '1';
+    for (int i = 0; i < ROWS; ++i) {
+        for (int j = 0; j < COLUMNS; ++j) {
+            this->arena[i][j] = fillArena;
+            ++fillArena;
         }
     }
 }
-void board::printBoard() {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            cout << table[i][j];
-            if (j < 3 - 1) cout << " │ ";
+void board::printArena() const {
+    for (int i = 0; i < ROWS; ++i) {
+        for (int j = 0; j < COLUMNS; ++j) {
+            cout << this->arena[i][j];
+            // Doesn't print separator on last line
+            if (j < ROWS - 1) cout << " │ ";
         }
         cout << endl;
-        if (i < 3 - 1) {
-            cout << "──┼───┼──\n";
+        // Doesn't print separator on last column
+        if (i < COLUMNS - 1) {
+            cout << "──┼───┼──" << endl;
         }
     }
 }
-bool board::checkValid(const char turn) {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            if (turn == table[i][j]) return 1;
-        }
-    }
-    return 0;
-}
-void board::updateBoard(const char turn, const char player) {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            if (turn == table[i][j]) {
-                table[i][j] = player;
-                printBoard();
+void board::updateArena(const char& move, const char& player) {
+    for (int i = 0; i < ROWS; ++i) {
+        for (int j = 0; j < COLUMNS; ++j) {
+            if (move == this->arena[i][j]) {
+                this->arena[i][j] = player;
+                printArena();
             }
         }
     }
 }
-bool board::checkVictory(const char player) {
-    for (int i = 0; i < 3; i++) {
-        if (table[i][0] == player && table[i][1] == player &&
-            table[i][2] == player)
-            return 1;
-        if (table[0][i] == player && table[1][i] == player &&
-            table[2][i] == player)
-            return 1;
+bool board::checkValidMove(const char& move) {
+    for (int i = 0; i < ROWS; ++i) {
+        for (int j = 0; j < COLUMNS; ++j) {
+            if (move == this->arena[i][j]) return VALID;
+        }
     }
-    if (table[0][0] == player && table[1][1] == player && table[2][2] == player)
-        return 1;
-    if (table[0][2] == player && table[1][1] == player && table[2][0] == player)
-        return 1;
-    return 0;
+    return INVALID;
+}
+bool board::checkVictory(const char& player) {
+    return (checkRowsAndColumns(player) || checkDiagonals(player));
+}
+bool board::checkRowsAndColumns(const char& player) {
+    for (int i = 0; i < ROWS; ++i) {
+        for (int j = 0; j < COLUMNS; ++j) {
+            if (this->arena[i][j] != player) break;
+            if (j == COLUMNS - 1) return WIN;
+        }
+        for (int j = 0; j < COLUMNS; ++j) {
+            if (this->arena[j][i] != player) break;
+            if (j == COLUMNS - 1) return WIN;
+        }
+    }
+    return NOTWIN;
+}
+bool board::checkDiagonals(const char& player) {
+    for (int i = 0; i < ROWS; ++i) {
+        if (this->arena[i][i] != player) break;
+        if (i == ROWS - 1) return WIN;
+    }
+    for (int i = 0; i < ROWS; ++i) {
+        if (this->arena[i][ROWS - (1 + i)] != player) break;
+        if (i == ROWS - 1) return WIN;
+    }
+    return NOTWIN;
 }
