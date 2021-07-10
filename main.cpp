@@ -51,7 +51,7 @@ readPlayerAgain:
   }
 }
 void checkTurn(char &turn, const int &i) {
-  cout << "\nVez do jogador " << i << ": ";
+  cout << "\nJogador " << i << ", escolha uma posição: ";
 readTurnAgain:
   char turnChar = readInput();
   if (isdigit(turnChar) && turnChar != '0') {
@@ -62,13 +62,12 @@ readTurnAgain:
     goto readTurnAgain;
   }
 }
+static constexpr int MAX_TURNS = 9;
+static constexpr int MIN_TURNS_OVER = 3;
 void play(board field, const char p1, const char p2) {
-  static constexpr int MAX_TURNS = 9;
-  static constexpr int MIN_TURNS_OVER = 4;
   int countTurns = 0;
   while (countTurns < MAX_TURNS) {
-    char currentPlayer;
-    currentPlayer = (countTurns % 2 == 0) ? p1 : p2;
+    char currentPlayer = (countTurns % 2 == 0) ? p1 : p2;
     char move;
     do {
       checkTurn(move, countTurns % 2 + 1);
@@ -79,20 +78,20 @@ void play(board field, const char p1, const char p2) {
       }
     } while (field.checkValidMove(move));
     field.updateArena(move, currentPlayer);
-    countTurns++;
     if (countTurns > MIN_TURNS_OVER) {
       if (isGameOver(field, currentPlayer, countTurns)) {
         return;
       }
     }
+    countTurns++;
   }
 }
 bool isGameOver(board field, const char player, const int countTurns) {
   if (field.checkVictory(player)) {
-    cout << "Parece que o jogador " << countTurns % 2 << " venceu!\n";
+    cout << "Parece que o jogador " << countTurns % 2 + 1 << " venceu!\n";
     return 1;
   }
-  if (countTurns == 9) {
+  if (countTurns == MAX_TURNS - 1) {
     cout << "O jogo empatou!" << endl;
     return 1;
   }
