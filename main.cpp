@@ -30,11 +30,13 @@ int main() {
   return 0;
 }
 void readInput(char &input) {
-  cin >> input;
+  string line;
+  getline(cin, line);
   if (cin.good() == false) {
-    cout << "Error reading input.\n";
+    cout << "Erro de leitura." << endl;
     exit(1);
   }
+  input = line[0];
 }
 void checkPlayer(char &player, const int &i) {
   cout << "Jogador " << i << ", escolha uma letra: ";
