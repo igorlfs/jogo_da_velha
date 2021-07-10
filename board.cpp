@@ -22,15 +22,19 @@ void board::initializeArena() {
 void board::printArena() const {
   for (int i = 0; i < ROWS; ++i) {
     for (int j = 0; j < COLUMNS; ++j) {
-      cout << this->arena[i][j];
+      if (isdigit(this->arena[i][j])) {
+        cout << GREEN << this->arena[i][j] << RESET;
+      } else {
+        cout << RED << this->arena[i][j] << RESET;
+      }
       // Doesn't print separator on last line
       if (j < ROWS - 1)
-        cout << " │ ";
+        cout << BLUE << " │ " << RESET;
     }
     cout << endl;
     // Doesn't print separator on last column
     if (i < COLUMNS - 1) {
-      cout << "──┼───┼──" << endl;
+      cout << BLUE << "──┼───┼──" << RESET << endl;
     }
   }
 }
