@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void readInput(char &input);
+char readInput();
 void checkPlayer(char &player, const int &i);
 void checkTurn(char &player, const int &i);
 void play(board field, const char p1, const char p2);
@@ -29,20 +29,19 @@ int main() {
 
   return 0;
 }
-void readInput(char &input) {
+char readInput() {
   string line;
   getline(cin, line);
   if (cin.good() == false) {
     cout << "Erro de leitura." << endl;
     exit(1);
   }
-  input = line[0];
+  return line[0];
 }
 void checkPlayer(char &player, const int &i) {
   cout << "Jogador " << i << ", escolha uma letra: ";
 readPlayerAgain:
-  char playerChar;
-  readInput(playerChar);
+  char playerChar = readInput();
   if (isalpha(playerChar)) {
     player = playerChar;
   } else {
@@ -54,8 +53,7 @@ readPlayerAgain:
 void checkTurn(char &turn, const int &i) {
   cout << "\nVez do jogador " << i << ": ";
 readTurnAgain:
-  char turnChar;
-  readInput(turnChar);
+  char turnChar = readInput();
   if (isdigit(turnChar) && turnChar != '0') {
     turn = turnChar;
   } else {
