@@ -6,26 +6,18 @@
 using namespace std;
 
 char readInput();
-void checkPlayer(char &player, const int &i);
+void checkPlayer(ticTacToe &game, const int &i);
 void checkTurn(char &player, const int &i);
-void play(board field, const char p1, const char p2);
-bool isGameOver(board field, const char player, const int countTurns);
+void play(ticTacToe field);
+bool isGameOver(ticTacToe field, const char player, const int countTurns);
 int main() {
+  ticTacToe game;
+  checkPlayer(game, 0);
+  checkPlayer(game, 1);
 
-  char players[2];
-  checkPlayer(players[0], 1);
-  do {
-    checkPlayer(players[1], 2);
-    if (players[0] == players[1]) {
-      cout << "Jogador 2, você não pode escolher a mesma letra que o jogador 1!"
-           << endl;
-    }
-  } while (players[0] == players[1]);
-
-  ticTacToe field;
-  field.initializeArena();
-  field.printArena();
-  play(field, players[0], players[1]);
+  game.initializeArena();
+  game.printArena();
+  play(game);
 
   return 0;
 }
@@ -38,12 +30,22 @@ char readInput() {
   }
   return line[0];
 }
-void checkPlayer(char &player, const int &i) {
-  cout << "Jogador " << i << ", escolha uma letra: ";
+void checkPlayer(ticTacToe &game, const int &i) {
+  cout << "Jogador " << i + 1 << ", escolha uma letra: ";
 readPlayerAgain:
   char playerChar = readInput();
   if (isalpha(playerChar)) {
-    player = playerChar;
+    if (i == 0) {
+      game.setPlayers(playerChar, i);
+      return;
+    } else if (game.getPlayers(0) != playerChar) {
+      game.setPlayers(playerChar, i);
+      return;
+    }
+    cout << "Jogador 2, você não pode escolher a mesma letra que o jogador 1!"
+         << endl
+         << "Por favor, jogador 2, insira uma letra diferente: ";
+    goto readPlayerAgain;
   } else {
     cout << "Erro na leitura" << endl;
     cout << "Por favor, jogador " << i << ", insira uma letra: ";
@@ -64,29 +66,30 @@ readTurnAgain:
 }
 static constexpr int MAX_TURNS = 9;
 static constexpr int MIN_TURNS_OVER = 3;
-void play(board field, const char p1, const char p2) {
+void play(ticTacToe game) {
   int countTurns = 0;
   while (countTurns < MAX_TURNS) {
-    char currentPlayer = (countTurns % 2 == 0) ? p1 : p2;
+    char currentPlayer =
+        (countTurns % 2 == 0) ? game.getPlayers(0) : game.getPlayers(1);
     char move;
     do {
       checkTurn(move, countTurns % 2 + 1);
-      if (field.checkValidMove(move)) {
+      if (game.checkValidMove(move)) {
         cout << "Jogada inválida!" << endl
              << "Esse número não está disponível" << endl
              << "Insira outro número" << endl;
       }
-    } while (field.checkValidMove(move));
-    field.updateArena(move, currentPlayer);
+    } while (game.checkValidMove(move));
+    game.updateArena(move, currentPlayer);
     if (countTurns > MIN_TURNS_OVER) {
-      if (isGameOver(field, currentPlayer, countTurns)) {
+      if (isGameOver(game, currentPlayer, countTurns)) {
         return;
       }
     }
     countTurns++;
   }
 }
-bool isGameOver(board field, const char player, const int countTurns) {
+bool isGameOver(ticTacToe field, const char player, const int countTurns) {
   if (field.checkVictory(player)) {
     cout << "Parece que o jogador " << countTurns % 2 + 1 << " venceu!\n";
     return 1;
