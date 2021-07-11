@@ -22,7 +22,7 @@ int main() {
     }
   } while (players[0] == players[1]);
 
-  board field;
+  ticTacToe field;
   field.initializeArena();
   field.printArena();
   play(field, players[0], players[1]);

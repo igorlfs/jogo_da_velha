@@ -9,7 +9,11 @@ const int INVALID = 1;
 const int WIN = 1;
 const int NOTWIN = 0;
 
-void board::initializeArena() {
+char ticTacToe::getPlayers(const int &i) const { return this->players[i]; }
+void ticTacToe::setPlayers(const char &player, const int &i) {
+  this->players[i] = player;
+}
+void ticTacToe::initializeArena() {
   // Initialize numbers from 1 to 9
   char fillArena = '1';
   for (int i = 0; i < ROWS; ++i) {
@@ -19,14 +23,10 @@ void board::initializeArena() {
     }
   }
 }
-void board::printArena() const {
+void ticTacToe::printArena() const {
   for (int i = 0; i < ROWS; ++i) {
     for (int j = 0; j < COLUMNS; ++j) {
-      if (isdigit(this->arena[i][j])) {
-        cout << GREEN << this->arena[i][j] << RESET;
-      } else {
-        cout << RED << this->arena[i][j] << RESET;
-      }
+      this->printArenaHelper(i, j);
       // Doesn't print separator on last line
       if (j < ROWS - 1)
         cout << BLUE << " │ " << RESET;
@@ -38,7 +38,16 @@ void board::printArena() const {
     }
   }
 }
-void board::updateArena(const char &move, const char &player) {
+void ticTacToe::printArenaHelper(const int &i, const int &j) const {
+  if (isdigit(this->arena[i][j])) {
+    cout << GREEN << this->arena[i][j] << RESET;
+  } else if (this->arena[i][j] == this->getPlayers(0)) {
+    cout << RED << this->arena[i][j] << RESET;
+  } else {
+    cout << YELLOW << this->arena[i][j] << RESET;
+  }
+}
+void ticTacToe::updateArena(const char &move, const char &player) {
   for (int i = 0; i < ROWS; ++i) {
     for (int j = 0; j < COLUMNS; ++j) {
       if (move == this->arena[i][j]) {
@@ -48,7 +57,7 @@ void board::updateArena(const char &move, const char &player) {
     }
   }
 }
-bool board::checkValidMove(const char &move) {
+bool ticTacToe::checkValidMove(const char &move) {
   for (int i = 0; i < ROWS; ++i) {
     for (int j = 0; j < COLUMNS; ++j) {
       if (move == this->arena[i][j])
@@ -57,10 +66,10 @@ bool board::checkValidMove(const char &move) {
   }
   return INVALID;
 }
-bool board::checkVictory(const char &player) {
+bool ticTacToe::checkVictory(const char &player) {
   return (checkRowsAndColumns(player) || checkDiagonals(player));
 }
-bool board::checkRowsAndColumns(const char &player) {
+bool ticTacToe::checkRowsAndColumns(const char &player) {
   for (int i = 0; i < ROWS; ++i) {
     for (int j = 0; j < COLUMNS; ++j) {
       if (this->arena[i][j] != player)
@@ -77,7 +86,7 @@ bool board::checkRowsAndColumns(const char &player) {
   }
   return NOTWIN;
 }
-bool board::checkDiagonals(const char &player) {
+bool ticTacToe::checkDiagonals(const char &player) {
   for (int i = 0; i < ROWS; ++i) {
     if (this->arena[i][i] != player)
       break;
