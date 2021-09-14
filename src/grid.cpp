@@ -1,4 +1,4 @@
-#include "board.hpp"
+#include "grid.hpp"
 
 #include <iostream>
 using std::cout;

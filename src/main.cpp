@@ -1,7 +1,7 @@
 #include <iostream>
 #include <regex>
 
-#include "board.hpp"
+#include "grid.hpp"
 
 using namespace std;
 
