@@ -5,79 +5,65 @@
 
 using namespace std;
 
-char readInput();
-void checkTurn(char &player, const int &i);
-void play(ticTacToe field);
-bool isGameOver(ticTacToe field, const char player, const int countTurns);
+struct interrupt {};
+struct wrongFormat {};
+
+void play(TicTacToe::game field);
+void readMove(char &move, const char &i);
 
 int main() {
-    ticTacToe game;
+    TicTacToe::game game;
     game.printArena();
     play(game);
     return 0;
 }
 
-char readInput() {
-    string line;
-
-    getline(cin, line);
-    if (cin.bad()) {
-        cout << "Erro de leitura." << endl;
-        exit(1);
-    }
-    return line[0];
-}
-
-void checkTurn(char &turn, const int &i) {
-    cout << "\nJogador " << i << ", escolha uma posição: ";
-readTurnAgain:
-    char turnChar = readInput();
-
-    if (isdigit(turnChar) && (turnChar != '0')) {
-        turn = turnChar;
-    } else {
-        cout << "Erro na leitura" << endl;
-        cout << "Por favor, jogador " << i << ", insira um número não nulo: ";
-        goto readTurnAgain;
-    }
-}
-
-static constexpr int MAX_TURNS = 9;
-static constexpr int MIN_TURNS_OVER = 3;
-void play(ticTacToe game) {
-    int countTurns = 0;
-
-    while (countTurns < MAX_TURNS) {
+void play(TicTacToe::game game) {
+    for (int turns = 0; turns < TicTacToe::MAX; turns++) {
         char currentPlayer =
-            (countTurns % 2 == 0) ? game.getPlayers(0) : game.getPlayers(1);
+            (turns % 2 == 0) ? game.getPlayer(0) : game.getPlayer(1);
         char move;
         do {
-            checkTurn(move, countTurns % 2 + 1);
-            if (game.checkValidMove(move)) {
+            readMove(move, game.getPlayer(turns % 2));
+            if (game.isInvalidMove(move)) {
                 cout << "Jogada inválida!" << endl
                      << "Esse número não está disponível" << endl
                      << "Insira outro número" << endl;
             }
-        } while (game.checkValidMove(move));
+        } while (game.isInvalidMove(move));
         game.updateArena(move, currentPlayer);
         game.printArena();
-        if (countTurns > MIN_TURNS_OVER) {
-            if (isGameOver(game, currentPlayer, countTurns)) {
-                return;
-            }
+        if (game.checkVictory(move)) {
+            cout << "O jogador " << turns % 2 + 1 << " venceu!\n";
+            return;
         }
-        countTurns++;
     }
+    cout << "O jogo empatou!\n";
 }
 
-bool isGameOver(ticTacToe field, const char player, const int countTurns) {
-    if (field.checkVictory(player)) {
-        cout << "Parece que o jogador " << countTurns % 2 + 1 << " venceu!\n";
-        return 1;
+void readMove(char &move, const char &i) {
+readMoveAgain:
+    cout << "\n[" << i << "] escolha uma posição: ";
+    try {
+        std::regex expected("[1-9]");
+        std::string readLine;
+        std::getline(std::cin, readLine);
+
+        if (std::cin.eof()) throw interrupt();
+        if (!std::regex_match(readLine, expected)) throw wrongFormat();
+
+        std::stringstream ss(readLine);
+        char moveChar;
+        ss >> moveChar;
+        move = moveChar;
+
+    } catch (interrupt e) {
+        std::cout << "\n\nA entrada de dados foi interrompida. Saindo.\n\n";
+        exit(EXIT_FAILURE);
+    } catch (wrongFormat e) {
+        cout << "Erro na leitura\n"
+                "Por favor, ["
+             << i << "], insira um número entre 1 e 9\n";
+        goto readMoveAgain;
     }
-    if (countTurns == MAX_TURNS - 1) {
-        cout << "O jogo empatou!" << endl;
-        return 1;
-    }
-    return 0;
 }
